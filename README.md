@@ -1,8 +1,8 @@
-# UniGuide 🧭
+# UniMate 🧭
 
 **Your university, simplified.**
 
-UniGuide is an AI-powered university assistant designed to help students navigate academic, administrative, and campus-related questions through one simple conversational interface.
+UniMate is an AI-powered university assistant designed to help students navigate academic, administrative, and campus-related questions through one simple conversational interface.
 
 ## 💡 The Problem
 
@@ -20,13 +20,13 @@ Sometimes the hardest part isn't getting the answer—it's knowing **who to ask 
 
 ## 🚀 Our Solution
 
-UniGuide brings university information into one accessible platform where students can ask questions naturally and receive clear, actionable answers based on verified university information.
+UniMate brings university information into one accessible platform where students can ask questions naturally and receive clear, actionable answers based on verified university information.
 
 For example:
 
 > "I need to get a transcript. Where do I go?"
 
-Instead of sending students to search through multiple sources, UniGuide can provide the relevant office, location, requirements, procedure, and other useful information in one response.
+Instead of sending students to search through multiple sources, UniMate can provide the relevant office, location, requirements, procedure, and other useful information in one response.
 
 ## ✨ Planned Features
 
@@ -40,7 +40,7 @@ Instead of sending students to search through multiple sources, UniGuide can pro
 
 ## 🧠 How It Will Work
 
-UniGuide will use a retrieval-based AI approach to connect students with university-specific information.
+UniMate will use a retrieval-based AI approach to connect students with university-specific information.
 
 ```text
 Student Question
