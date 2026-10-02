@@ -60,6 +60,19 @@ export default function Home() {
   const [ isSidebarOpen, setIsSidebarOpen ] = useState(true);
   const [ expandedTopic, setExpandedTopic ] = useState("registration");
 
+
+  const [ searchQuery, setSearchQuery ] = useState("");
+  const [ chatHistory, setChatHistory ] = useState([
+    { id: 1, title: "Semester Registration Fees", date: "Yesterday" },
+    { id: 2, title: "Library Opening Hours", date: "2 days ago" },
+    { id: 3, title: "Club Contact Information", date: "3 days ago" },
+  ]);
+
+
+  const filteredHistory = chatHistory.filter((item) =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   // 3. FUNCTION: Runs when user sends a message
   const sendMessageText = (textToSend) => {
     if (!textToSend.trim()) return;
@@ -105,6 +118,40 @@ export default function Home() {
           </span>
         </div>
 
+
+        <div className="p-3 border-b border-slate-800">
+          {/* Search Input Box */}
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search past chats..."
+            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500"
+          />
+
+          {/* Filtered History List */}
+          <div className="mt-3 space-y-1">
+            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider px-1">
+              Recent Chats
+            </p>
+            {filteredHistory.length > 0 ? (
+              filteredHistory.map((chat) => (
+                <button
+                  key={chat.id}
+                  className="w-full text-left px-2 py-1.5 rounded-md hover:bg-slate-900 text-xs text-slate-400 hover:text-slate-200 transition-colors flex justify-between items-center"
+                >
+                  <span className="truncate">{chat.title}</span>
+                  <span className="text-[10px] text-slate-600 shrink-0 ml-2">
+                    {chat.date}
+                  </span>
+                </button>
+              ))
+            ) : (
+              <p className="text-xs text-slate-600 p-1">No chats found</p>
+            )}
+          </div>
+        </div>
+
         <div className="flex-1 overflow-y-auto p-3 space-y-2">
           {TOPIC_CATEGORIES.map((category) => {
             const isOpen = expandedTopic === category.id;
@@ -114,7 +161,7 @@ export default function Home() {
                 key={category.id}
                 className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900/50">
                 <button
-                  onClick={() => SetExpandedTopic(isOpen ? null : category.id)}
+                  onClick={() => setExpandedTopic(isOpen ? null : category.id)}
                   className="w-full text-left p-3 flex justify-between items-center text-sm font-medium hover:bg-slate-800/60 transition-colors"
                 >
                   <span>{category.title}</span>
