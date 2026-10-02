@@ -2,34 +2,77 @@
 
 import { useState } from "react";
 
+const TOPIC_CATEGORIES = [
 
+  {
+    id: "registration",
+    title: "Registration",
+    questions: [
+      "How do I register for the upcoming semester? ",
+      "What are the registration deadlines?",
+      "Can I register late or add/drop classes?"
+    ],
+  },
+
+  {
+    id: "club-info",
+    title: "Club Info and Social Activities",
+    questions: [
+      "What student clubs are available to join? ",
+      "How do I start a new club?",
+      "Where can I check upcoming club events?"
+    ],
+  },
+
+  {
+    id: "withdrawal",
+    title: "Withdrawal and Course Drop",
+    questions: [
+      "What is the policy for course withdrawal? ",
+      "Will I get a tuition refund if I refund?",
+      "Who do I contact to approve my withdrawal?"
+    ],
+  },
+
+  {
+    id: "navigation",
+    title: "Navigation & Locations",
+    questions: [
+      "Where is the adminstration building? ",
+      "When are the library opening hours?",
+      "Which bldg is Mechanical floor located at?"
+    ],
+  },
+];
 
 export default function Home() {
   // 1. STATE: Array to store all messages in the current conversation
   const [ messages, setMessages ] = useState([
-    { id: 1, sender: "bot", text: "Hey! I'm Navi, your guide to AAU. How can I help you today?" },
+    {
+      id: 1,
+      sender: "bot",
+      text: "Hey! I'm Navi, your guide to AAU. Select a topic from the left sidebar or type your question below"
+    },
   ]);
 
   // 2. STATE: Text currently inside the input box
   const [ inputValue, setInputValue ] = useState("");
+  const [ isSidebarOpen, setIsSidebarOpen ] = useState(true);
+  const [ expandedTopic, setExpandedTopic ] = useState("registration");
 
   // 3. FUNCTION: Runs when user sends a message
-  const handleSendMessage = (e) => {
-    e.preventDefault(); // Prevents page reload on form submit
-    if (!inputValue.trim()) return; // Don't send empty messages
+  const sendMessageText = (textToSend) => {
+    if (!textToSend.trim()) return;
 
     // Create user message object
     const userMessage = {
       id: Date.now(),
       sender: "user",
-      text: inputValue,
+      text: textToSend,
     };
 
     // Update messages state (adds user message to existing array)
     setMessages((prev) => [ ...prev, userMessage ]);
-
-    // Clear input box
-    const currentInput = inputValue;
     setInputValue("");
 
     // Simulate AI response after a short delay (Placeholder for backend API integration)
@@ -37,58 +80,123 @@ export default function Home() {
       const botMessage = {
         id: Date.now() + 1,
         sender: "bot",
-        text: `You asked: "${currentInput}". I am currently using dummy responses until we connect my trained AI model!`,
+        text: `You asked: "${textToSend}". I am currently using dummy responses until we connect my trained AI model!`,
       };
       setMessages((prev) => [ ...prev, botMessage ]);
     }, 1000);
   };
 
+  const handleSendMessage = (e) => {
+    e.preventDefault(); // Prevents page reload on form submit
+    sendMessageText(inputValue);
+  }; // Don't send empty messages
+
   return (
-    <div className="flex flex-col h-screen bg-slate-900 text-slate-100">
 
-      {/* HEADER */}
-      <header className="p-4 border-b border-slate-800 bg-slate-950 font-bold text-lg text-center">
-        UniMate
-      </header>
+    <div className="flex h-screen bg-slate-900 text-slate-100 overflow-hidden">
+      <aside className={`${isSidebarOpen ? "w-80" : "w-0"} transition-all duration-300 ease-in-out bg-slate-950 border-r border-slate-800 flex flex-col overflow-hidden shrink-0`}
+      >
+        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+          <h2 className="font-bold text-sm tracking-wide text-slate-200">
+            Explore Topics
+          </h2>
+          <span className="text-xs text-slate-500">
+            Guide
+          </span>
+        </div>
 
-      {/* CHAT MESSAGES CONTAINER */}
-      <main className="flex-1 overflow-y-auto p-4 space-y-4 max-w-3xl w-full mx-auto">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-          >
-            <div
-              className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-md ${msg.sender === "user"
-                ? "bg-blue-600 text-white rounded-br-none"
-                : "bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-none"
-                }`}
+        <div className="flex-1 overflow-y-auto p-3 space-y-2">
+          {TOPIC_CATEGORIES.map((category) => {
+            const isOpen = expandedTopic === category.id;
+
+            return (
+              <div
+                key={category.id}
+                className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900/50">
+                <button
+                  onClick={() => SetExpandedTopic(isOpen ? null : category.id)}
+                  className="w-full text-left p-3 flex justify-between items-center text-sm font-medium hover:bg-slate-800/60 transition-colors"
+                >
+                  <span>{category.title}</span>
+                  <span className="text-slate-500 text-xs">
+                    {isOpen ? "▲" : "▼"}
+                  </span>
+                </button>
+
+                {isOpen && (
+                  <div className="p-2 pt-0 space-y-1 bg-slate-950/40 border-t border-slate-800/50">
+                    {category.questions.map((q, idx) => (
+                      <button key={idx}
+                        onClick={() => sendMessageText(q)}
+                        className="w-full text-left p-2 rounded-lg text-xs text-slate-300 hover:text-white hover:bg-blue-600/20 hover:border-blue-500/40 border border-transparent transition-all">
+                        .{q}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </aside>
+
+
+      <div className="flex-1 flex flex-col h-full overflow-hidden">
+
+        {/* HEADER */}
+        <header className="p-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition-colors"
             >
-              {msg.text}
-            </div>
+              {isSidebarOpen ? "◀ Hide Topics" : "▶ Show Topics"}
+            </button>
+            <h1 className="font-bold text-base text-slate-100">
+              UniMate
+            </h1>
           </div>
-        ))}
-      </main>
+        </header>
 
-      {/* INPUT FORM */}
-      <footer className="p-4 border-t border-slate-800 bg-slate-950">
-        <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto flex gap-2">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Ask anything about AAU..."
-            className="flex-1 bg-slate-800 border border-slate-700 text-slate-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 placeholder-slate-400"
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-3 rounded-xl text-sm transition-colors"
-          >
-            Ask
-          </button>
-        </form>
-      </footer>
+        {/* CHAT MESSAGES CONTAINER */}
+        <main className="flex-1 overflow-y-auto p-4 space-y-4 max-w-3xl w-full mx-auto">
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-md ${msg.sender === "user"
+                  ? "bg-blue-600 text-white rounded-br-none"
+                  : "bg-slate-800 text-slate-200 border border-slate-700 rounded-bl-none"
+                  }`}
+              >
+                {msg.text}
+              </div>
+            </div>
+          ))}
+        </main>
 
+        {/* INPUT FORM */}
+        <footer className="p-4 border-t border-slate-800 bg-slate-950">
+          <form onSubmit={handleSendMessage} className="max-w-3xl mx-auto flex gap-2">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Ask anything about AAU..."
+              className="flex-1 bg-slate-800 border border-slate-700 text-slate-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 placeholder-slate-400"
+            />
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-3 rounded-xl text-sm transition-colors"
+            >
+              Ask
+            </button>
+          </form>
+        </footer>
+
+      </div>
     </div>
   );
 }
