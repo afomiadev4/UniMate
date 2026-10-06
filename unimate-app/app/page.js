@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const TOPIC_CATEGORIES = [
 
@@ -47,57 +47,107 @@ const TOPIC_CATEGORIES = [
 
 export default function Home() {
   // 1. STATE: Array to store all messages in the current conversation
-  const [ messages, setMessages ] = useState([
-    {
-      id: 1,
-      sender: "bot",
-      text: "Hey! I'm Navi, your guide to AAU. Select a topic from the left sidebar or type your question below"
-    },
-  ]);
+  const welcomeMessage = {
+  id: "welcome",
+  sender: "bot",
+  text: "Hey! I'm Navi, your guide to AAU. Select a topic from the left sidebar or type your question below",
+};
 
-  // 2. STATE: Text currently inside the input box
-  const [ inputValue, setInputValue ] = useState("");
-  const [ isSidebarOpen, setIsSidebarOpen ] = useState(true);
-  const [ expandedTopic, setExpandedTopic ] = useState("registration");
+const [chatHistory, setChatHistory] = useState([]);
+const [activeChatId, setActiveChatId] = useState(null);
+const [searchQuery, setSearchQuery] = useState("");
+const [historyLoaded, setHistoryLoaded] = useState(false);
+const [inputValue, setInputValue] = useState("");
+const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+const [expandedTopic, setExpandedTopic] = useState("registration");
 
+useEffect(() => {
+  const timer = setTimeout(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("unimate-chats") || "[]");
+      if (Array.isArray(saved)) setChatHistory(saved);
+    } catch {
+      // Start with empty history if saved data is invalid.
+    }
+    setHistoryLoaded(true);
+  }, 0);
 
-  const [ searchQuery, setSearchQuery ] = useState("");
-  const [ chatHistory, setChatHistory ] = useState([
-    { id: 1, title: "Semester Registration Fees", date: "Yesterday" },
-    { id: 2, title: "Library Opening Hours", date: "2 days ago" },
-    { id: 3, title: "Club Contact Information", date: "3 days ago" },
-  ]);
+  return () => clearTimeout(timer);
+}, []);
 
+useEffect(() => {
+  if (historyLoaded) {
+    localStorage.setItem("unimate-chats", JSON.stringify(chatHistory));
+  }
+}, [chatHistory, historyLoaded]);
 
-  const filteredHistory = chatHistory.filter((item) =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+const activeChat = chatHistory.find((chat) => chat.id === activeChatId);
+const messages = activeChat?.messages ?? [welcomeMessage];
+
+const filteredHistory = chatHistory.filter((chat) =>
+  chat.title.toLowerCase().includes(searchQuery.trim().toLowerCase())
+);
 
   // 3. FUNCTION: Runs when user sends a message
   const sendMessageText = (textToSend) => {
-    if (!textToSend.trim()) return;
+  const question = textToSend.trim();
+  if (!question) return;
 
-    // Create user message object
-    const userMessage = {
-      id: Date.now(),
-      sender: "user",
-      text: textToSend,
+  const chatId = activeChatId ?? crypto.randomUUID();
+  const userMessage = {
+    id: crypto.randomUUID(),
+    sender: "user",
+    text: question,
+  };
+
+  if (activeChatId) {
+    setChatHistory((previous) =>
+      previous.map((chat) =>
+        chat.id === chatId
+          ? {
+              ...chat,
+              messages: [...chat.messages, userMessage],
+              updatedAt: Date.now(),
+            }
+          : chat
+      )
+    );
+  } else {
+    setChatHistory((previous) => [
+      {
+        id: chatId,
+        title: question.slice(0, 50),
+        updatedAt: Date.now(),
+        messages: [welcomeMessage, userMessage],
+      },
+      ...previous,
+    ]);
+    setActiveChatId(chatId);
+  }
+
+  setInputValue("");
+
+  // Your friend's RAG integration can replace this placeholder later.
+  setTimeout(() => {
+    const botMessage = {
+      id: crypto.randomUUID(),
+      sender: "bot",
+      text: `You asked: "${question}". I am currently using dummy responses until we connect my trained AI model!`,
     };
 
-    // Update messages state (adds user message to existing array)
-    setMessages((prev) => [ ...prev, userMessage ]);
-    setInputValue("");
-
-    // Simulate AI response after a short delay (Placeholder for backend API integration)
-    setTimeout(() => {
-      const botMessage = {
-        id: Date.now() + 1,
-        sender: "bot",
-        text: `You asked: "${textToSend}". I am currently using dummy responses until we connect my trained AI model!`,
-      };
-      setMessages((prev) => [ ...prev, botMessage ]);
-    }, 1000);
-  };
+    setChatHistory((previous) =>
+      previous.map((chat) =>
+        chat.id === chatId
+          ? {
+              ...chat,
+              messages: [...chat.messages, botMessage],
+              updatedAt: Date.now(),
+            }
+          : chat
+      )
+    );
+  }, 1000);
+};
 
   const handleSendMessage = (e) => {
     e.preventDefault(); // Prevents page reload on form submit
@@ -120,6 +170,17 @@ export default function Home() {
 
 
         <div className="p-3 border-b border-slate-800">
+          <button
+            type="button"
+            onClick={() => {
+              setActiveChatId(null);
+              setInputValue("");
+            }}
+            className="mb-3 w-full rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-500"
+          >
+            + New chat
+          </button>
+
           {/* Search Input Box */}
           <input
             type="text"
@@ -135,14 +196,15 @@ export default function Home() {
               Recent Chats
             </p>
             {filteredHistory.length > 0 ? (
-              filteredHistory.map((chat) => (
+              filteredHistory.map((chat) => (   
                 <button
                   key={chat.id}
+                  onClick={() => setActiveChatId(chat.id)}
                   className="w-full text-left px-2 py-1.5 rounded-md hover:bg-slate-900 text-xs text-slate-400 hover:text-slate-200 transition-colors flex justify-between items-center"
                 >
                   <span className="truncate">{chat.title}</span>
                   <span className="text-[10px] text-slate-600 shrink-0 ml-2">
-                    {chat.date}
+                    {new Date(chat.updatedAt).toLocaleDateString()}
                   </span>
                 </button>
               ))
@@ -194,7 +256,8 @@ export default function Home() {
         <header className="p-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              type="button"
+              onClick={() => setIsSidebarOpen((open) => !open)}
               className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition-colors"
             >
               {isSidebarOpen ? "◀ Hide Topics" : "▶ Show Topics"}
