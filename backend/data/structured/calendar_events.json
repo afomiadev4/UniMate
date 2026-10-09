@@ -1,0 +1,74 @@
+[
+  {
+    "id": "registration_regular_2026",
+    "event": "Registration of Year II and Above Undergraduate Regular Students",
+    "date_start": "2026-09-17",
+    "date_end": "2026-09-18",
+    "academic_year": "2026/27",
+    "semester": 1,
+    "student_category": "undergraduate_regular",
+    "year": "Year II and Above",
+    "source": "aau_academic_calendar.pdf",
+    "page": 1
+  },
+  {
+    "id": "semester_start_regular_2026",
+    "event": "First Semester Classes Begin for all Regular and Continuing UG Students",
+    "date_start": "2026-09-21",
+    "date_end": "2026-09-21",
+    "academic_year": "2026/27",
+    "semester": 1,
+    "student_category": "undergraduate_regular_and_continuing",
+    "year": "All",
+    "source": "aau_academic_calendar.pdf",
+    "page": 1
+  },
+  {
+    "id": "registration_year2_2018_entry",
+    "event": "Registration of Year II Undergraduate Regular Students (2018 entry)",
+    "date_start": "2026-09-25",
+    "date_end": "2026-09-25",
+    "academic_year": "2026/27",
+    "semester": 1,
+    "student_category": "undergraduate_regular",
+    "year": "Year II (2018 entry)",
+    "source": "aau_academic_calendar.pdf",
+    "page": 1
+  },
+  {
+    "id": "semester_start_year2_2026",
+    "event": "First Semester Classes Begin for Year II UG Students",
+    "date_start": "2026-09-28",
+    "date_end": "2026-09-28",
+    "academic_year": "2026/27",
+    "semester": 1,
+    "student_category": "undergraduate_year2",
+    "year": "Year II",
+    "source": "aau_academic_calendar.pdf",
+    "page": 1
+  },
+  {
+    "id": "semester2_start_2027",
+    "event": "Second Semester Classes Begin",
+    "date_start": "2027-02-11",
+    "date_end": "2027-02-11",
+    "academic_year": "2026/27",
+    "semester": 2,
+    "student_category": "all",
+    "year": "All",
+    "source": "aau_academic_calendar.pdf",
+    "page": 4
+  },
+  {
+    "id": "first_semester_exams_2027",
+    "event": "First Semester Exam Period for All Students",
+    "date_start": "2027-01-11",
+    "date_end": "2027-01-22",
+    "academic_year": "2026/27",
+    "semester": 1,
+    "student_category": "all",
+    "year": "all",
+    "source": "aau_academic_calendar.pdf",
+    "page": 2
+}
+]

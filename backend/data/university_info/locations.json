@@ -1,0 +1,18 @@
+[
+    {
+        "id": "registrar_office",
+        "name": "Registrar's Office",
+        "category": "administrative_office",
+        "building": "New Building",
+        "floor": "Ground Floor",
+        "room": "012",
+        "description": "The Registrar's Office is located on the ground floor of the New Building, Room 012.",
+        "keywords": [
+            "registrar",
+            "registrar office",
+            "registration office",
+            "where is the registrar",
+            "registrar location"
+        ]
+    }
+]
